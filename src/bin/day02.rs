@@ -5,25 +5,19 @@ type Reveal = (u32, u32, u32);
 pub struct Game {
     nr: u32,
     reveals: Vec<Reveal>,
-} 
+}
 
 impl Game {
     pub fn is_solvable(&self, bag: Reveal) -> bool {
-        let mut bag = bag;
-        for reveal in &self.reveals {
-            if !self.is_solvable_reveal(reveal, &mut bag) {
-                return false;
-            }
-        }
-        true
+        !self
+            .reveals
+            .iter()
+            .any(|reveal| !self.is_solvable_reveal(reveal, bag))
     }
 
-    pub fn is_solvable_reveal(&self, reveal: &Reveal, bag: &mut Reveal) -> bool {
+    pub fn is_solvable_reveal(&self, reveal: &Reveal, bag: Reveal) -> bool {
         // check if the bag contains enough cubes
-        if bag.0 < reveal.0 || bag.1 < reveal.1 || bag.2 < reveal.2 {
-            return false;
-        }
-        true
+        !(bag.0 < reveal.0 || bag.1 < reveal.1 || bag.2 < reveal.2)
     }
 
     pub fn power(&self) -> u32 {
@@ -41,7 +35,6 @@ impl Game {
         min_bag
     }
 }
-
 
 pub fn parse_reveals(line: &str) -> Vec<Reveal> {
     let mut reveals: Vec<Reveal> = Vec::new();
@@ -61,14 +54,14 @@ pub fn parse_reveals(line: &str) -> Vec<Reveal> {
                 g = number;
             } else if color == "blue" {
                 b = number;
-            } 
+            }
         }
         reveals.push((r, g, b));
     }
     reveals
-
 }
 
+/// Parse a line into a game
 pub fn parse_game(line: &str) -> Game {
     let mut reveals: Vec<Reveal> = Vec::new();
     let mut nr = 0;
@@ -81,34 +74,25 @@ pub fn parse_game(line: &str) -> Game {
             reveals = parse_reveals(part);
         }
     }
-    Game {
-        nr,
-        reveals,
-    }
+    Game { nr, reveals }
 }
 
+/// Parse the input into a vector of games
 pub fn get_games(input: &str) -> Vec<Game> {
-    let mut games: Vec<Game> = Vec::new();
-    for line in input.lines() {
-        games.push(parse_game(line.trim()));
-    }
-    games
+    input.lines().map(|line| parse_game(line.trim())).collect()
 }
 
+/// Return the solution for part 1 of the game
 pub fn solve(input: &str, bag: Reveal) -> u32 {
-    let games = get_games(input);
-    let mut sum = 0;
-    for game in games {
-        if game.is_solvable(bag) {
-            sum += game.nr;
-        }
-    }
-    sum
+    get_games(input)
+        .iter()
+        .filter(|game| game.is_solvable(bag))
+        .map(|game| game.nr)
+        .sum()
 }
 
 pub fn solve2(input: &str) -> u32 {
-    let games = get_games(input);
-    games.iter().map(|game| game.power()).sum()
+    get_games(input).iter().map(|game| game.power()).sum()
 }
 
 pub fn main() {
