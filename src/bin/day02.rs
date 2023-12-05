@@ -9,10 +9,10 @@ pub struct Game {
 
 impl Game {
     pub fn is_solvable(&self, bag: Reveal) -> bool {
-        !self
+        self
             .reveals
             .iter()
-            .any(|reveal| !self.is_solvable_reveal(reveal, bag))
+            .all(|reveal| self.is_solvable_reveal(reveal, bag))
     }
 
     pub fn is_solvable_reveal(&self, reveal: &Reveal, bag: Reveal) -> bool {
