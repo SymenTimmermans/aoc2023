@@ -28,26 +28,9 @@ fn char_to_card(c: char) -> Card {
         'Q' => 12,
         'J' => 11,
         'T' => 10,
+        '*' => 1,
         _ => c.to_digit(10).unwrap() as u8,
     }
-}
-
-fn card_to_char(c: Card) -> char {
-    match c {
-        14 => 'A',
-        13 => 'K',
-        12 => 'Q',
-        11 => 'J',
-        10 => 'T',
-        _ => (c as u32).to_string().chars().next().unwrap(),
-    }
-}
-
-fn hand_to_string(hand: Hand) -> String {
-    let hand_hex = format!("{:x}", hand).to_uppercase();
-    hand_hex.chars().map(|c| {
-        card_to_char(c.to_digit(16).unwrap() as u8)
-    }).collect()
 }
 
 fn hand_type(hand: Hand) -> HandType {
@@ -60,6 +43,8 @@ fn hand_type(hand: Hand) -> HandType {
         card_counts[c.to_digit(16).unwrap() as usize] += 1;
     }
 
+    let nr_jokers = card_counts[1];
+
     // if there are any 5s in the array, we have five of a kind
     if card_counts.contains(&5) {
         return 7;
@@ -67,26 +52,60 @@ fn hand_type(hand: Hand) -> HandType {
 
     // if there are any 4s in the array, we have four of a kind
     if card_counts.contains(&4) {
+        // if the hand contains a 1, we have a five of a kind instead
+        if nr_jokers > 0 {
+            return 7;
+        }
         return 6;
     }
 
     // if there are a 3 and a 2 in the array, we have a full house
     if card_counts.contains(&3) && card_counts.contains(&2) {
+        // if the hand contains a 1, we have a five of a kind instead
+        // since this can only occur as 111xx and 11xxx
+        if nr_jokers > 0 {
+            return 7;
+        }
         return 5;
     }
 
     // if there are any 3s in the array, we have three of a kind
     if card_counts.contains(&3) {
+        // if the hand contains a 1, we have a four of a kind instead 
+        // since this can mean xxxy1 or 111xy
+        if nr_jokers > 0 {
+            return 6;
+        }
         return 4;
     }
 
     // if there are two 2s in the array, we have two pair
     if card_counts.iter().filter(|&&x| x == 2).count() == 2 {
+        // if there are two jokers, we have a four of a kind instead
+        // since this can only occur as 11xxy
+        if nr_jokers == 2 {
+            return 6;
+        }
+        // if we have one joker, we have a full house instead
+        // since this can only occur as 1xxyy
+        if nr_jokers == 1 {
+            return 5;
+        }
         return 3;
     }
 
     // if there is one 2 in the array, we have one pair
     if card_counts.contains(&2) {
+        // if there are any jokers, we have a three of a kind instead
+        // since this can only occur as 1xxyz or 11xyz
+        if nr_jokers > 0 {
+            return 4;
+        }
+        return 2;
+    }
+
+    // if we have high card, and we have a joker, we have a pair instead
+    if nr_jokers > 0 {
         return 2;
     }
 
@@ -132,9 +151,7 @@ fn rank(set: Vec<(Hand, Bid)>) -> Vec<(Rank, Bid)> {
     let mut ranks = vec![];
     // create a counter
     // loop through the sorted set
-    for (i, (hand, bid)) in sorted_set.iter().enumerate() {
-        println!("{}: {} - {}, rank {}", i, hand_to_string(*hand), hand_value(*hand), i + 1);
-
+    for (i, (_, bid)) in sorted_set.iter().enumerate() {
         // add the rank to the vector
         ranks.push((i as u32 + 1, *bid));
     }
@@ -149,11 +166,18 @@ pub fn solve(input: &str) -> u32 {
     ranks.iter().map(|(rank, bid)| rank * bid).sum()
 }
 
+pub fn solve2(input: &str) -> u32 {
+    // replace all 'J' with '*' in the input
+    let input = input.replace("J", "*");
+    return solve(&input);
+}
 
 
 pub fn main() {
     let input = include_str!("../../input/day07.txt");
-    println!("Part 1: {}", solve(input));
+    println!("Part 1: {}", solve(input));    
+    let input = include_str!("../../input/day07.txt");
+    println!("Part 2: {}", solve2(input));    
 }
 
 #[cfg(test)]
@@ -175,6 +199,7 @@ mod tests {
         assert_eq!(char_to_card('4'), 4);
         assert_eq!(char_to_card('3'), 3);
         assert_eq!(char_to_card('2'), 2);
+        assert_eq!(char_to_card('*'), 1);
     }
 
     #[test]
@@ -186,6 +211,9 @@ mod tests {
         QQQJA 483";
 
         let outcome = solve(input);
-        assert_eq!(outcome, 6440);
+        assert_eq!(outcome, 6440, "part 1");
+
+        let outcome = solve2(input);
+        assert_eq!(outcome, 5905, "part 2");
     }
 }
