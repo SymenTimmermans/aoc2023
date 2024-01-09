@@ -105,11 +105,7 @@ impl Schematic {
                         continue;
                     }
 
-                    if self.nr_is_adjacent_to(
-                        *nr_pos2,
-                        nr2.to_string().len(),
-                        gear_pos,
-                    ) {
+                    if self.nr_is_adjacent_to(*nr_pos2, nr2.to_string().len(), gear_pos) {
                         return Some(nr * nr2);
                     }
                 }

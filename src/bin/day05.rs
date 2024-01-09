@@ -16,7 +16,7 @@ pub fn trans_vec_sub_src(a: &Vec<Translation>, b: &Vec<Translation>) -> Vec<Tran
     out
 }
 
-/// Subtract translations from vector a, that are partially implemented in vector b based 
+/// Subtract translations from vector a, that are partially implemented in vector b based
 /// on the destination range of a.
 pub fn trans_vec_sub_dst(a: &Vec<Translation>, b: &Vec<Translation>) -> Vec<Translation> {
     let mut out = a.clone();
@@ -79,7 +79,7 @@ pub fn trans_shift_overlaps(a: &Translation, b: &Translation) -> Vec<Translation
         // that is b.start - ao.start
         t.src = a.src + (b.start() - ao.start);
         out.push(t);
-    }    
+    }
 
     // case 3 (right side)
     //    |---a---|
@@ -90,7 +90,7 @@ pub fn trans_shift_overlaps(a: &Translation, b: &Translation) -> Vec<Translation
         let mut t = b.clone();
         t.snip_left(ao.start - b.start());
         // b should get the source range of a, but adds the shift
-        t.src = a.src; 
+        t.src = a.src;
         out.push(t);
     }
 
@@ -98,7 +98,7 @@ pub fn trans_shift_overlaps(a: &Translation, b: &Translation) -> Vec<Translation
     // |--------a-----------|
     //        |---b---|
     if b.start() > ao.start && b.end() < ao.end {
-        // we don't need to snip b, we just need to 
+        // we don't need to snip b, we just need to
         // find the new source range
         let mut t = b.clone();
         // b should get the source range of a, but adds the shift
@@ -108,8 +108,6 @@ pub fn trans_shift_overlaps(a: &Translation, b: &Translation) -> Vec<Translation
 
     out
 }
-
-
 
 pub fn trans_sub_dst(a: &Translation, b: &Translation) -> Vec<Translation> {
     let mut out = vec![];
@@ -169,7 +167,6 @@ pub fn trans_sub_dst(a: &Translation, b: &Translation) -> Vec<Translation> {
     }
     out
 }
-
 
 /// Subtract translation b from translation a looking at inputs, returning remaining parts.
 ///
@@ -477,7 +474,7 @@ impl Map {
         // second step. This will be done by adding new translations that
         // will fill up the holes. These new translations will be added to the
         // as a last step, to ensure that they do not influence the other
-        // translations. The special thing about these translations, is that 
+        // translations. The special thing about these translations, is that
         // they will take over the source of the existing translation, and
         // translate it to the destination of the new translation.
         let new_shifted = trans_vec_shift_overlaps(&self.translations, &ts);
@@ -491,7 +488,6 @@ impl Map {
     }
 
     fn translate_range(&self, r: &Range<u64>) -> Vec<Range<u64>> {
-
         let mut output = vec![];
         // keep track of the remaining ranges
         let mut remaining = vec![r.clone()];
@@ -620,7 +616,10 @@ pub fn solve2(input: &str) -> u64 {
     let (seeds, categories) = parse_input(input);
 
     // transform the seeds into ranges
-    let mut ranges = seeds.chunks(2).map(|c| c[0]..c[0] + c[1]).collect::<Vec<_>>();
+    let mut ranges = seeds
+        .chunks(2)
+        .map(|c| c[0]..c[0] + c[1])
+        .collect::<Vec<_>>();
 
     for c in categories {
         let mut new_ranges = vec![];
@@ -640,7 +639,10 @@ pub fn solve2b(input: &str) -> u64 {
 
     // transform the seeds into ranges
     // take the array of values and split it into pairs
-    let ranges = seeds.chunks(2).map(|c| c[0]..c[0] + c[1]).collect::<Vec<_>>();
+    let ranges = seeds
+        .chunks(2)
+        .map(|c| c[0]..c[0] + c[1])
+        .collect::<Vec<_>>();
 
     let mut basemap: Map = Map {
         translations: vec![],
@@ -1181,10 +1183,6 @@ soil-to-fertilizer map:
         assert_vec_eq(output, expected);
     }
 
-
-
-
-
     #[test]
     fn test_trans_sub_src_cover() {
         let a = Translation {
@@ -1198,10 +1196,7 @@ soil-to-fertilizer map:
             rng: 20,
         };
         let c = trans_sub_src(&a, &b);
-        assert_eq!(
-            c,
-            vec![]
-        );
+        assert_eq!(c, vec![]);
     }
 
     #[test]
@@ -1217,10 +1212,7 @@ soil-to-fertilizer map:
             rng: 4,
         };
         let c = trans_sub_src(&a, &b);
-        assert_eq!(
-            c,
-            vec![a]
-        );
+        assert_eq!(c, vec![a]);
     }
 
     #[test]
@@ -1236,10 +1228,7 @@ soil-to-fertilizer map:
             rng: 4,
         };
         let c = trans_sub_src(&a, &b);
-        assert_eq!(
-            c,
-            vec![a]
-        );
+        assert_eq!(c, vec![a]);
     }
 
     #[test]
@@ -1303,15 +1292,18 @@ soil-to-fertilizer map:
         let c = trans_sub_src(&a, &b);
         assert_eq!(
             c,
-            vec![Translation {
-                src: 10,
-                dst: 50,
-                rng: 2
-            }, Translation {
-                src: 18,
-                dst: 58,
-                rng: 2
-            }]
+            vec![
+                Translation {
+                    src: 10,
+                    dst: 50,
+                    rng: 2
+                },
+                Translation {
+                    src: 18,
+                    dst: 58,
+                    rng: 2
+                }
+            ]
         );
     }
 
@@ -1353,15 +1345,18 @@ soil-to-fertilizer map:
         let c = trans_sub_dst(&a, &b);
         assert_eq!(
             c,
-            vec![Translation {
-                src: 10,
-                dst: 50,
-                rng: 2
-            }, Translation {
-                src: 18,
-                dst: 58,
-                rng: 2
-            }]
+            vec![
+                Translation {
+                    src: 10,
+                    dst: 50,
+                    rng: 2
+                },
+                Translation {
+                    src: 18,
+                    dst: 58,
+                    rng: 2
+                }
+            ]
         );
     }
 
@@ -1401,10 +1396,7 @@ soil-to-fertilizer map:
             rng: 5,
         };
         let c = trans_shift_overlaps(&a, &b);
-        assert_eq!(
-            c,
-            vec![ ]
-        );
+        assert_eq!(c, vec![]);
     }
 
     #[test]

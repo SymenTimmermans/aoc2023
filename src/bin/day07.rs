@@ -71,7 +71,7 @@ fn hand_type(hand: Hand) -> HandType {
 
     // if there are any 3s in the array, we have three of a kind
     if card_counts.contains(&3) {
-        // if the hand contains a 1, we have a four of a kind instead 
+        // if the hand contains a 1, we have a four of a kind instead
         // since this can mean xxxy1 or 111xy
         if nr_jokers > 0 {
             return 6;
@@ -113,18 +113,20 @@ fn hand_type(hand: Hand) -> HandType {
     return 1;
 }
 
-
 fn hand_value(hand: Hand) -> HandValue {
     // get the type of the hand
     let hand_type = hand_type(hand);
     // return the value
-    (hand_type << 20) + hand 
+    (hand_type << 20) + hand
 }
 
 fn parse_hand(input: &str) -> Hand {
-    input.chars().map(char_to_card).enumerate().map(|(i, c)| {
-        (c as u32) << (4 * (4 - i))
-    }).sum::<u32>()
+    input
+        .chars()
+        .map(char_to_card)
+        .enumerate()
+        .map(|(i, c)| (c as u32) << (4 * (4 - i)))
+        .sum::<u32>()
 }
 
 fn parse_input_line(input: &str) -> (Hand, Bid) {
@@ -172,12 +174,11 @@ pub fn solve2(input: &str) -> u32 {
     return solve(&input);
 }
 
-
 pub fn main() {
     let input = include_str!("../../input/day07.txt");
-    println!("Part 1: {}", solve(input));    
+    println!("Part 1: {}", solve(input));
     let input = include_str!("../../input/day07.txt");
-    println!("Part 2: {}", solve2(input));    
+    println!("Part 2: {}", solve2(input));
 }
 
 #[cfg(test)]

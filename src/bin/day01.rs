@@ -1,15 +1,17 @@
 use std::collections::HashMap;
 
 fn line_calibrate(line: &str) -> u32 {
-        let digits = line.chars().filter(|c| c.is_digit(10));
-        // take the first digit, multiply by 10 and add the last digit.
-        let outcome = digits.clone().take(1).next().unwrap().to_digit(10).unwrap() * 10
-            + digits.clone().last().unwrap().to_digit(10).unwrap();
-            outcome
+    let digits = line.chars().filter(|c| c.is_digit(10));
+    // take the first digit, multiply by 10 and add the last digit.
+    let outcome = digits.clone().take(1).next().unwrap().to_digit(10).unwrap() * 10
+        + digits.clone().last().unwrap().to_digit(10).unwrap();
+    outcome
 }
 
 fn line_calibrate2(line: &str) -> u32 {
-    let search = vec!["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+    let search = vec![
+        "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+    ];
     let search_numbers = vec!["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
     let mut index = 0;

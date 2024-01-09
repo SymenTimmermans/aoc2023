@@ -101,7 +101,7 @@ Distance:  9  40  200"
             288
         );
     }
-    
+
     #[test]
     fn test_solve2() {
         assert_eq!(

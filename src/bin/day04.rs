@@ -67,12 +67,10 @@ pub fn solve(input: &str) -> u32 {
         .sum()
 }
 
-/// Solve part 2 of the puzzle, calculate the number of 
+/// Solve part 2 of the puzzle, calculate the number of
 /// scratchcards based on the new rules.
 pub fn solve2(input: &str) -> u32 {
-    let cards = input
-        .lines()
-        .map(|line| Card::from_str(line).unwrap());
+    let cards = input.lines().map(|line| Card::from_str(line).unwrap());
 
     let count = cards.clone().count();
     let mut copies = vec![1; count];
@@ -80,7 +78,7 @@ pub fn solve2(input: &str) -> u32 {
     for (i, card) in cards.enumerate() {
         let nr_matches = card.nr_matches();
         let from = i + 1;
-        let to = (i + nr_matches as usize + 1).min(count); 
+        let to = (i + nr_matches as usize + 1).min(count);
         for j in from..to {
             copies[j] += copies[i];
         }
@@ -89,7 +87,6 @@ pub fn solve2(input: &str) -> u32 {
     // return the sum of all the copies
     copies.iter().sum()
 }
-
 
 /// Main function that executes both parts.
 pub fn main() {
