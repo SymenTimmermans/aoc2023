@@ -444,7 +444,6 @@ fn solve(input: &str) -> usize {
 fn solve2(input: &str) -> usize {
     let mut map = Map::from_str(input).expect("Failed to parse map");
     map.mark_inside();
-    println!("{}", map);
     map.nr_inside()
 }
 
